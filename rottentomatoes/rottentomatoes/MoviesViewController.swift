@@ -9,27 +9,32 @@
 import UIKit
 
 class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
+    
+    @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     let urlString = "http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json?apikey=khakbvwgcgb4qubh2fbx4epm&limit=20&country=US"
     
+    var refreshControl:UIRefreshControl!
+    
     var moviesArray :[NSDictionary] = []
     
-    @IBAction func refreshMovies(sender: AnyObject) {
-        refreshMovies()
-     
-        
-    }
     
     func refreshMovies() {
+        MMProgressHUD.showWithTitle("Loading", status: "25%")
         var request = NSURLRequest(URL: NSURL(string: urlString))
         
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()){
             (response :NSURLResponse!, data :NSData!, error :NSError!) -> Void in
-            var rootObj = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as NSDictionary
-                        println("url result count:\(rootObj.count)")
-            self.moviesArray = rootObj["movies"] as [NSDictionary]
-            self.tableView.reloadData()
+            if(error != nil) {
+                self.errorLabel.text = "Network Error!"
+            } else {
+                self.errorLabel.text = ""
+                var rootObj = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as NSDictionary
+                println("url result count:\(rootObj.count)")
+                self.moviesArray = rootObj["movies"] as [NSDictionary]
+                self.tableView.reloadData()
+            }
+            MMProgressHUD.dismiss()
         }
     }
     
@@ -39,14 +44,22 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.delegate = self
         tableView.dataSource = self
         
+        self.refreshControl = UIRefreshControl()
+        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refersh")
+        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        self.tableView.addSubview(refreshControl)
+        
         refreshMovies()
-        
-        
-        
         
         // Do any additional setup after loading the view.
     }
-
+    
+    func refresh(sender:AnyObject)
+    {
+        refreshMovies()
+        self.refreshControl.endRefreshing()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -63,32 +76,24 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         var cell = tableView.dequeueReusableCellWithIdentifier("cellId") as MovieTableViewCell
         let movie = moviesArray[indexPath.row]
         let title = movie["title"] as String
-        let synopsis = movie["synopsis"] as String
         cell.titleLabel.text = "\(title)"
-        let posters = movie["posters"] as NSDictionary
+        let synopsis = movie["synopsis"] as String
         cell.descriptionLabel.text = "\(synopsis)"
-        populateThumbnail(posters["thumbnail"] as String, thumbnail: cell.posterLabel)
+        let posters = movie["posters"] as NSDictionary
+        let thumbnailUrlString = posters["thumbnail"] as String
+        let thumbnailUrl = NSURL(string: thumbnailUrlString)
+        cell.posterLabel.setImageWithURL(thumbnailUrl)
         return cell
     }
     
-    func populateThumbnail(url :String, thumbnail: UIImageView) -> Void {
-        
-        var request = NSURLRequest(URL: NSURL(string: url))
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()){
-            (response :NSURLResponse!, data :NSData!, error :NSError!) -> Void in
-            thumbnail.image = UIImage(data: data)
-        }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
+        var movieDetailViewController = segue.destinationViewController as MovieDetailViewController
+        let cell = sender as MovieTableViewCell
+        movieDetailViewController.titleString = cell.titleLabel.text!
+        movieDetailViewController.synopsisString = cell.descriptionLabel.text!
+        movieDetailViewController.imageData = cell.posterLabel.image!
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+    
 }
