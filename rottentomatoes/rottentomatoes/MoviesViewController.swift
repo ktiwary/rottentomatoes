@@ -86,7 +86,6 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         return cell
     }
     
-    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
         var movieDetailViewController = segue.destinationViewController as MovieDetailViewController
         let cell = sender as MovieTableViewCell
