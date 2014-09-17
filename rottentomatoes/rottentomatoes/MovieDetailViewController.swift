@@ -10,6 +10,7 @@ import UIKit
 
 class MovieDetailViewController: UIViewController {
     
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var navTitle: UINavigationItem!
 //    @IBOutlet weak var movieTitle: UILabel!
 //    @IBOutlet weak var synopsis: UILabel!
@@ -29,6 +30,10 @@ class MovieDetailViewController: UIViewController {
 
         
         // Do any additional setup after loading the view.
+    }
+    
+    override func viewDidLayoutSubviews() {
+        self.scrollView.contentSize = CGSize(width: 304, height: 800)
     }
     
     override func didReceiveMemoryWarning() {

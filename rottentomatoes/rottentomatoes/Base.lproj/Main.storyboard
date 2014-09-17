@@ -110,7 +110,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="synopsis" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="V8c-vS-gau">
-                                        <rect key="frame" x="8" y="270" width="304" height="240"/>
+                                        <rect key="frame" x="8" y="270" width="304" height="470"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -129,6 +129,7 @@
                     <connections>
                         <outlet property="navTitle" destination="SnI-D7-Cc0" id="3IA-dR-9wS"/>
                         <outlet property="posterView" destination="n63-8V-h9V" id="5Qj-0e-hTI"/>
+                        <outlet property="scrollView" destination="Y8D-P4-SXD" id="9QE-g3-epp"/>
                         <outlet property="synopsisLabel" destination="V8c-vS-gau" id="Mwq-d6-JAA"/>
                     </connections>
                 </viewController>
